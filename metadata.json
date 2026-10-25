@@ -1,0 +1,6 @@
+{
+  "name": "Verve Celebration & Event Planner",
+  "description": "Intelligent celebration and event planning workspace with budgets, timelines, vendor management, guest RSVPs, and Gemini AI assistance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

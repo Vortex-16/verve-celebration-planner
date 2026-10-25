@@ -1,0 +1,171 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with display info and preferences",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique Firebase Auth UID" },
+        "email": { "type": "string", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "photoURL": { "type": "string", "description": "Avatar photo URL" },
+        "createdAt": { "type": "string", "description": "Creation timestamp ISO" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp ISO" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "A celebration or event created and managed by the user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique event identifier" },
+        "userId": { "type": "string", "description": "UID of the event owner" },
+        "name": { "type": "string", "description": "Name or title of the event", "maxLength": 120 },
+        "eventType": { "type": "string", "description": "Type of event (wedding, birthday, etc.)", "maxLength": 50 },
+        "date": { "type": "string", "description": "Event start date (YYYY-MM-DD)" },
+        "endDate": { "type": "string", "description": "Optional event end date" },
+        "location": { "type": "string", "description": "Venue name or address", "maxLength": 200 },
+        "locationType": { "type": "string", "description": "In-person, virtual, or hybrid", "enum": ["in-person", "virtual", "hybrid"] },
+        "totalBudget": { "type": "number", "description": "Total allocated budget in cents" },
+        "currency": { "type": "string", "description": "Currency code such as USD, EUR, GBP, INR", "maxLength": 6 },
+        "guestCount": { "type": "number", "description": "Target or expected guest count" },
+        "theme": { "type": "string", "description": "Theme or aesthetic concept", "maxLength": 200 },
+        "atmosphere": { "type": "string", "description": "Desired mood and atmosphere", "maxLength": 200 },
+        "notes": { "type": "string", "description": "Additional notes and preferences", "maxLength": 2000 },
+        "createdAt": { "type": "string", "description": "Creation timestamp ISO" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp ISO" }
+      },
+      "required": ["id", "userId", "name", "eventType", "date", "totalBudget", "currency"]
+    },
+    "BudgetItem": {
+      "title": "BudgetItem",
+      "description": "Allocated budget line item or tracked expense",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique budget item identifier" },
+        "eventId": { "type": "string", "description": "Associated event ID" },
+        "userId": { "type": "string", "description": "UID of the owner" },
+        "category": { "type": "string", "description": "Budget category (Venue, Catering, etc.)", "maxLength": 60 },
+        "title": { "type": "string", "description": "Name of expense or allocation", "maxLength": 120 },
+        "plannedAmount": { "type": "number", "description": "Planned budget amount in cents" },
+        "actualAmount": { "type": "number", "description": "Actual spent amount in cents" },
+        "paidStatus": { "type": "string", "description": "Payment status", "enum": ["unpaid", "partially_paid", "paid"] },
+        "vendorId": { "type": "string", "description": "Optional connected vendor ID" },
+        "notes": { "type": "string", "description": "Expense notes or receipts info", "maxLength": 500 },
+        "createdAt": { "type": "string", "description": "Creation timestamp ISO" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp ISO" }
+      },
+      "required": ["id", "eventId", "userId", "category", "title", "plannedAmount", "actualAmount", "paidStatus"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Planning checklist task or milestone",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique task identifier" },
+        "eventId": { "type": "string", "description": "Associated event ID" },
+        "userId": { "type": "string", "description": "UID of the owner" },
+        "title": { "type": "string", "description": "Task title", "maxLength": 140 },
+        "description": { "type": "string", "description": "Task details", "maxLength": 1000 },
+        "dueDate": { "type": "string", "description": "Due date (YYYY-MM-DD)" },
+        "priority": { "type": "string", "description": "Priority level", "enum": ["low", "medium", "high", "urgent"] },
+        "status": { "type": "string", "description": "Current status", "enum": ["pending", "in_progress", "completed"] },
+        "category": { "type": "string", "description": "Task category", "maxLength": 60 },
+        "assignee": { "type": "string", "description": "Person assigned to task", "maxLength": 100 },
+        "createdAt": { "type": "string", "description": "Creation timestamp ISO" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp ISO" }
+      },
+      "required": ["id", "eventId", "userId", "title", "dueDate", "priority", "status"]
+    },
+    "Vendor": {
+      "title": "Vendor",
+      "description": "Service provider or contractor record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique vendor identifier" },
+        "eventId": { "type": "string", "description": "Associated event ID" },
+        "userId": { "type": "string", "description": "UID of the owner" },
+        "name": { "type": "string", "description": "Vendor or business name", "maxLength": 120 },
+        "category": { "type": "string", "description": "Service category", "maxLength": 60 },
+        "contactName": { "type": "string", "description": "Point of contact name", "maxLength": 100 },
+        "contactPhone": { "type": "string", "description": "Phone number", "maxLength": 40 },
+        "contactEmail": { "type": "string", "description": "Email address", "maxLength": 120 },
+        "quotedPrice": { "type": "number", "description": "Quoted price in cents" },
+        "bookingStatus": { "type": "string", "description": "Booking progress", "enum": ["contacted", "quoted", "negotiating", "booked", "declined"] },
+        "paymentStatus": { "type": "string", "description": "Payment status", "enum": ["unpaid", "deposit_paid", "fully_paid"] },
+        "notes": { "type": "string", "description": "Contract and package notes", "maxLength": 1000 },
+        "createdAt": { "type": "string", "description": "Creation timestamp ISO" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp ISO" }
+      },
+      "required": ["id", "eventId", "userId", "name", "category", "bookingStatus", "paymentStatus"]
+    },
+    "Guest": {
+      "title": "Guest",
+      "description": "Attendee and RSVP record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique guest identifier" },
+        "eventId": { "type": "string", "description": "Associated event ID" },
+        "userId": { "type": "string", "description": "UID of the owner" },
+        "name": { "type": "string", "description": "Guest full name", "maxLength": 120 },
+        "email": { "type": "string", "description": "Guest email", "maxLength": 120 },
+        "phone": { "type": "string", "description": "Guest phone number", "maxLength": 40 },
+        "rsvpStatus": { "type": "string", "description": "RSVP state", "enum": ["attending", "declined", "tentative", "awaiting"] },
+        "group": { "type": "string", "description": "Group/Circle (Family, Friends, VIP)", "maxLength": 60 },
+        "dietaryNotes": { "type": "string", "description": "Dietary or accessibility restrictions", "maxLength": 300 },
+        "plusOnes": { "type": "number", "description": "Number of additional attendees" },
+        "invitationSent": { "type": "boolean", "description": "Whether invitation was sent" },
+        "createdAt": { "type": "string", "description": "Creation timestamp ISO" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp ISO" }
+      },
+      "required": ["id", "eventId", "userId", "name", "rsvpStatus"]
+    },
+    "AIPlan": {
+      "title": "AIPlan",
+      "description": "AI-generated planning proposal and suggestions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique plan identifier" },
+        "eventId": { "type": "string", "description": "Associated event ID" },
+        "userId": { "type": "string", "description": "UID of the owner" },
+        "summary": { "type": "string", "description": "Executive summary of recommendation", "maxLength": 2000 },
+        "contentJson": { "type": "string", "description": "Serialized JSON proposal details", "maxLength": 30000 },
+        "status": { "type": "string", "description": "Review status (proposed, reviewed, applied)", "enum": ["proposed", "reviewed", "applied"] },
+        "createdAt": { "type": "string", "description": "Creation timestamp ISO" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp ISO" }
+      },
+      "required": ["id", "eventId", "userId", "summary", "contentJson", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document isolated to owner"
+    },
+    "/events/{eventId}": {
+      "schema": "Event",
+      "description": "Event documents restricted to creator"
+    },
+    "/events/{eventId}/budgetItems/{itemId}": {
+      "schema": "BudgetItem",
+      "description": "Budget line items for an event"
+    },
+    "/events/{eventId}/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Timeline tasks and milestones for an event"
+    },
+    "/events/{eventId}/vendors/{vendorId}": {
+      "schema": "Vendor",
+      "description": "Vendors associated with an event"
+    },
+    "/events/{eventId}/guests/{guestId}": {
+      "schema": "Guest",
+      "description": "Guest and RSVP records for an event"
+    },
+    "/events/{eventId}/aiPlans/{planId}": {
+      "schema": "AIPlan",
+      "description": "AI-generated recommendations and plans for an event"
+    }
+  }
+}

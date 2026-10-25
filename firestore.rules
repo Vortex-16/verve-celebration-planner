@@ -1,0 +1,192 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isEventOwner(eventId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/events/$(eventId)) &&
+        get(/databases/$(database)/documents/events/$(eventId)).data.userId == request.auth.uid;
+    }
+
+    // --- Users Collection ---
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // Users cannot browse other user profiles
+      allow create: if isOwner(userId) &&
+        request.resource.data.uid == request.auth.uid &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() <= 120;
+      allow update: if isOwner(userId) &&
+        request.resource.data.uid == resource.data.uid;
+      allow delete: if isOwner(userId);
+    }
+
+    // --- Events Collection ---
+    match /events/{eventId} {
+      function isValidEvent(data) {
+        return data.id is string && isValidId(data.id) &&
+          data.userId == request.auth.uid &&
+          data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+          data.eventType is string && data.eventType.size() <= 60 &&
+          data.date is string && data.date.size() <= 30 &&
+          data.totalBudget is number && data.totalBudget >= 0 &&
+          data.currency is string && data.currency.size() <= 10;
+      }
+
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn(); // client must query where userId == request.auth.uid
+      allow create: if isSignedIn() &&
+        isValidId(eventId) &&
+        isValidEvent(request.resource.data) &&
+        request.resource.data.id == eventId;
+      allow update: if isSignedIn() &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.id == resource.data.id &&
+        isValidEvent(request.resource.data);
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      // --- Budget Items Subcollection ---
+      match /budgetItems/{itemId} {
+        function isValidBudgetItem(data) {
+          return data.id is string && isValidId(data.id) &&
+            data.eventId == eventId &&
+            data.userId == request.auth.uid &&
+            data.title is string && data.title.size() > 0 && data.title.size() <= 140 &&
+            data.category is string && data.category.size() <= 60 &&
+            data.plannedAmount is number && data.plannedAmount >= 0 &&
+            data.actualAmount is number && data.actualAmount >= 0 &&
+            data.paidStatus in ['unpaid', 'partially_paid', 'paid'];
+        }
+
+        allow get: if isEventOwner(eventId);
+        allow list: if isEventOwner(eventId);
+        allow create: if isEventOwner(eventId) &&
+          isValidId(itemId) &&
+          isValidBudgetItem(request.resource.data) &&
+          request.resource.data.id == itemId;
+        allow update: if isEventOwner(eventId) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.eventId == eventId &&
+          request.resource.data.userId == request.auth.uid &&
+          isValidBudgetItem(request.resource.data);
+        allow delete: if isEventOwner(eventId);
+      }
+
+      // --- Tasks Subcollection ---
+      match /tasks/{taskId} {
+        function isValidTask(data) {
+          return data.id is string && isValidId(data.id) &&
+            data.eventId == eventId &&
+            data.userId == request.auth.uid &&
+            data.title is string && data.title.size() > 0 && data.title.size() <= 160 &&
+            data.priority in ['low', 'medium', 'high', 'urgent'] &&
+            data.status in ['pending', 'in_progress', 'completed'];
+        }
+
+        allow get: if isEventOwner(eventId);
+        allow list: if isEventOwner(eventId);
+        allow create: if isEventOwner(eventId) &&
+          isValidId(taskId) &&
+          isValidTask(request.resource.data) &&
+          request.resource.data.id == taskId;
+        allow update: if isEventOwner(eventId) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.eventId == eventId &&
+          request.resource.data.userId == request.auth.uid &&
+          isValidTask(request.resource.data);
+        allow delete: if isEventOwner(eventId);
+      }
+
+      // --- Vendors Subcollection ---
+      match /vendors/{vendorId} {
+        function isValidVendor(data) {
+          return data.id is string && isValidId(data.id) &&
+            data.eventId == eventId &&
+            data.userId == request.auth.uid &&
+            data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+            data.category is string && data.category.size() <= 60 &&
+            data.bookingStatus in ['contacted', 'quoted', 'negotiating', 'booked', 'declined'] &&
+            data.paymentStatus in ['unpaid', 'deposit_paid', 'fully_paid'];
+        }
+
+        allow get: if isEventOwner(eventId);
+        allow list: if isEventOwner(eventId);
+        allow create: if isEventOwner(eventId) &&
+          isValidId(vendorId) &&
+          isValidVendor(request.resource.data) &&
+          request.resource.data.id == vendorId;
+        allow update: if isEventOwner(eventId) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.eventId == eventId &&
+          request.resource.data.userId == request.auth.uid &&
+          isValidVendor(request.resource.data);
+        allow delete: if isEventOwner(eventId);
+      }
+
+      // --- Guests Subcollection ---
+      match /guests/{guestId} {
+        function isValidGuest(data) {
+          return data.id is string && isValidId(data.id) &&
+            data.eventId == eventId &&
+            data.userId == request.auth.uid &&
+            data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+            data.rsvpStatus in ['attending', 'declined', 'tentative', 'awaiting'];
+        }
+
+        allow get: if isEventOwner(eventId);
+        allow list: if isEventOwner(eventId);
+        allow create: if isEventOwner(eventId) &&
+          isValidId(guestId) &&
+          isValidGuest(request.resource.data) &&
+          request.resource.data.id == guestId;
+        allow update: if isEventOwner(eventId) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.eventId == eventId &&
+          request.resource.data.userId == request.auth.uid &&
+          isValidGuest(request.resource.data);
+        allow delete: if isEventOwner(eventId);
+      }
+
+      // --- AI Plans Subcollection ---
+      match /aiPlans/{planId} {
+        function isValidAIPlan(data) {
+          return data.id is string && isValidId(data.id) &&
+            data.eventId == eventId &&
+            data.userId == request.auth.uid &&
+            data.summary is string && data.summary.size() <= 2000 &&
+            data.status in ['proposed', 'reviewed', 'applied'];
+        }
+
+        allow get: if isEventOwner(eventId);
+        allow list: if isEventOwner(eventId);
+        allow create: if isEventOwner(eventId) &&
+          isValidId(planId) &&
+          isValidAIPlan(request.resource.data) &&
+          request.resource.data.id == planId;
+        allow update: if isEventOwner(eventId) &&
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.eventId == eventId &&
+          request.resource.data.userId == request.auth.uid &&
+          isValidAIPlan(request.resource.data);
+        allow delete: if isEventOwner(eventId);
+      }
+    }
+  }
+}
