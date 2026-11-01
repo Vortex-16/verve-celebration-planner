@@ -390,7 +390,7 @@ export const VendorManager: React.FC<VendorManagerProps> = ({
                   <label className="block text-xs font-semibold text-zinc-800 mb-1">Booking Status</label>
                   <select
                     value={bookingStatus}
-                    onChange={(e) => setBookingStatus(e.target.value as any)}
+                    onChange={(e) => setBookingStatus(e.target.value as 'contacted' | 'quoted' | 'negotiating' | 'booked' | 'declined')}
                     className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   >
                     <option value="contacted">Contacted</option>
@@ -405,7 +405,7 @@ export const VendorManager: React.FC<VendorManagerProps> = ({
                   <label className="block text-xs font-semibold text-zinc-800 mb-1">Payment Status</label>
                   <select
                     value={paymentStatus}
-                    onChange={(e) => setPaymentStatus(e.target.value as any)}
+                    onChange={(e) => setPaymentStatus(e.target.value as 'unpaid' | 'deposit_paid' | 'fully_paid')}
                     className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   >
                     <option value="unpaid">Unpaid</option>

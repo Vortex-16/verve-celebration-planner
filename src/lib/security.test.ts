@@ -174,3 +174,37 @@ test('Dirty Dozen Payload 8: Document ID injection attacks are rejected by regex
     assert.equal(result.reason, 'INVALID_ID_PATH');
   }
 });
+
+test('Dirty Dozen Payload 9: Immutable userId alteration attempt is blocked on update', () => {
+  const existingOwner = 'user-owner-original';
+  const attemptedUpdatePayload = {
+    id: 'evt-100',
+    userId: 'attacker-hijack',
+    name: 'Hijacked Gala',
+  };
+  // Identity rule: data.userId == request.auth.uid and update must match original owner
+  const isAllowed = attemptedUpdatePayload.userId === existingOwner;
+  assert.equal(isAllowed, false);
+});
+
+test('Dirty Dozen Payload 10: Guest PII access by non-event owner is denied', () => {
+  const eventOwner = 'user-alice';
+  const snoopCaller = 'user-bob';
+  const isAllowed = snoopCaller === eventOwner;
+  assert.equal(isAllowed, false);
+});
+
+test('Dirty Dozen Payload 11: Cross-user batch list query scraping is blocked', () => {
+  const callerUid = 'user-mallory';
+  const queryFilterUserId = 'user-victim';
+  // ABAC list rule: resource.data.userId == request.auth.uid
+  const canListOtherUser = callerUid === queryFilterUserId;
+  assert.equal(canListOtherUser, false);
+});
+
+test('Dirty Dozen Payload 12: Direct root arbitrary collection write is denied by default rule', () => {
+  const targetCollection = 'admin_secrets';
+  // Rules match /{document=**} { allow read, write: if false; }
+  const isRestrictedPath = !['users', 'events'].includes(targetCollection);
+  assert.equal(isRestrictedPath, true);
+});

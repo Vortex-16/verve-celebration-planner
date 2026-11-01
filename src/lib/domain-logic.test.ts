@@ -129,3 +129,18 @@ test('escapeCsvField escapes quotes, commas, and neutralizes formula injections'
   assert.ok(csv.includes('Gluten-free'));
 });
 
+test('calculateBudgetSummary handles empty or zero-budget edge cases gracefully', () => {
+  const emptySummary = calculateBudgetSummary(0, []);
+  assert.equal(emptySummary.totalBudget, 0);
+  assert.equal(emptySummary.plannedTotal, 0);
+  assert.equal(emptySummary.actualTotal, 0);
+  assert.equal(emptySummary.remainingBudget, 0);
+  assert.equal(emptySummary.utilizationPercentage, 0);
+  assert.equal(emptySummary.isOverBudget, false);
+});
+
+test('date-utils validates leap years and far-future dates without NaN drift', () => {
+  const futureDueDate = calculateDueDate('2028-02-29', 14);
+  assert.equal(futureDueDate, '2028-02-15');
+});
+

@@ -416,7 +416,7 @@ export const TimelineTasks: React.FC<TimelineTasksProps> = ({
                   <label className="block text-xs font-semibold text-zinc-800 mb-1">Priority</label>
                   <select
                     value={priority}
-                    onChange={(e) => setPriority(e.target.value as any)}
+                    onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high' | 'urgent')}
                     className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   >
                     <option value="low">Low</option>
@@ -445,7 +445,7 @@ export const TimelineTasks: React.FC<TimelineTasksProps> = ({
                   <label className="block text-xs font-semibold text-zinc-800 mb-1">Status</label>
                   <select
                     value={status}
-                    onChange={(e) => setStatus(e.target.value as any)}
+                    onChange={(e) => setStatus(e.target.value as 'pending' | 'in_progress' | 'completed')}
                     className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   >
                     <option value="pending">Pending</option>

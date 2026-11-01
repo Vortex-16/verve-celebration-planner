@@ -269,7 +269,7 @@ export const EventWizardModal: React.FC<EventWizardModalProps> = ({
                   </label>
                   <select
                     value={locationType}
-                    onChange={(e) => setLocationType(e.target.value as any)}
+                    onChange={(e) => setLocationType(e.target.value as 'in-person' | 'virtual' | 'hybrid')}
                     className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   >
                     <option value="in-person">In-Person</option>
@@ -425,7 +425,7 @@ export const EventWizardModal: React.FC<EventWizardModalProps> = ({
             {step > 1 ? (
               <button
                 type="button"
-                onClick={() => setStep((step - 1) as any)}
+                onClick={() => setStep((prev) => (prev === 3 ? 2 : 1))}
                 className="flex items-center gap-1 px-3.5 py-2 rounded-xl border border-zinc-200 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />

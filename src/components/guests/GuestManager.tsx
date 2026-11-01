@@ -302,7 +302,7 @@ export const GuestManager: React.FC<GuestManagerProps> = ({
                     <td className="py-3 px-4">
                       <select
                         value={guest.rsvpStatus}
-                        onChange={(e) => handleQuickStatusChange(guest, e.target.value as any)}
+                        onChange={(e) => handleQuickStatusChange(guest, e.target.value as 'attending' | 'declined' | 'tentative' | 'awaiting')}
                         className={`text-[11px] font-semibold px-2.5 py-1 rounded-full uppercase border focus:outline-none cursor-pointer ${
                           guest.rsvpStatus === 'attending'
                             ? 'bg-zinc-900 text-white border-zinc-900'
@@ -446,7 +446,7 @@ export const GuestManager: React.FC<GuestManagerProps> = ({
                   <label className="block text-xs font-semibold text-zinc-800 mb-1">RSVP Status</label>
                   <select
                     value={rsvpStatus}
-                    onChange={(e) => setRsvpStatus(e.target.value as any)}
+                    onChange={(e) => setRsvpStatus(e.target.value as 'attending' | 'declined' | 'tentative' | 'awaiting')}
                     className="w-full px-2.5 py-2 rounded-xl border border-zinc-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   >
                     <option value="awaiting">Awaiting</option>

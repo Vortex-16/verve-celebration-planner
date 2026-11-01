@@ -409,7 +409,7 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({
                   <label className="block text-xs font-semibold text-zinc-800 mb-1">Payment Status</label>
                   <select
                     value={paidStatus}
-                    onChange={(e) => setPaidStatus(e.target.value as any)}
+                    onChange={(e) => setPaidStatus(e.target.value as 'unpaid' | 'partially_paid' | 'paid')}
                     className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   >
                     <option value="unpaid">Unpaid</option>

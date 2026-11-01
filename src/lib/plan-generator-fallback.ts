@@ -102,7 +102,16 @@ export function getClientDeterministicFallbackPlan(event: Partial<EventItem>) {
   };
 }
 
-export function getClientDomainAdvisorAdvice(question: string, context?: any): string {
+export interface ClientDomainAdvisorContext {
+  name?: string;
+  eventType?: string;
+  date?: string;
+  totalBudget?: number;
+  currency?: string;
+  guestCount?: number;
+}
+
+export function getClientDomainAdvisorAdvice(question: string, context?: ClientDomainAdvisorContext): string {
   const q = question.toLowerCase();
 
   if (q.includes('ratio') || q.includes('staff') || q.includes('server') || q.includes('waiter')) {

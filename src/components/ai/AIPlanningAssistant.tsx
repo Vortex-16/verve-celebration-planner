@@ -18,7 +18,18 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '../../lib/budget-math.ts';
 import { calculateDueDate, formatDisplayDate } from '../../lib/date-utils.ts';
-import type { EventItem, BudgetItem, TaskItem, AIPlanItem } from '../../types/index.ts';
+import type {
+  EventItem,
+  BudgetItem,
+  TaskItem,
+  AIPlanItem,
+  AIPlanData,
+  AIPlanBudgetCategory,
+  AIPlanTimelineTask,
+  AIPlanThemeSuggestion,
+  AIPlanVendorItem,
+  AIPlanRiskMitigation
+} from '../../types/index.ts';
 
 interface AIPlanningAssistantProps {
   event: EventItem;
@@ -35,7 +46,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
 
   // AI Master Plan states
   const [isGenerating, setIsGenerating] = useState(false);
-  const [planData, setPlanData] = useState<any>(null);
+  const [planData, setPlanData] = useState<AIPlanData | null>(null);
   const [planSource, setPlanSource] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -86,15 +97,15 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
         throw new Error(data.error || 'Failed to generate plan');
       }
 
-      setPlanData(data.plan);
+      setPlanData(data.plan as AIPlanData);
       setPlanSource(data.source || 'gemini_ai');
 
       // Pre-select all suggested items for the review modal
       if (data.plan.budgetBreakdown) {
-        setSelectedBudgetIndices(data.plan.budgetBreakdown.map((_: any, idx: number) => idx));
+        setSelectedBudgetIndices(data.plan.budgetBreakdown.map((_: AIPlanBudgetCategory, idx: number) => idx));
       }
       if (data.plan.timelineTasks) {
-        setSelectedTaskIndices(data.plan.timelineTasks.map((_: any, idx: number) => idx));
+        setSelectedTaskIndices(data.plan.timelineTasks.map((_: AIPlanTimelineTask, idx: number) => idx));
       }
 
       // Save plan record to history
@@ -108,9 +119,10 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
         createdAt: new Date().toISOString(),
       };
       await onSavePlanRecord(planItem);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error generating AI plan:', err);
-      setErrorMsg(err.message || 'An error occurred during plan generation. Please try again.');
+      const message = err instanceof Error ? err.message : 'An error occurred during plan generation. Please try again.';
+      setErrorMsg(message);
     } finally {
       setIsGenerating(false);
     }
@@ -123,8 +135,8 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
 
     try {
       const budgetToImport: Partial<BudgetItem>[] = (planData.budgetBreakdown || [])
-        .filter((_: any, idx: number) => selectedBudgetIndices.includes(idx))
-        .map((b: any) => ({
+        .filter((_: AIPlanBudgetCategory, idx: number) => selectedBudgetIndices.includes(idx))
+        .map((b: AIPlanBudgetCategory) => ({
           title: `${b.category} Allocation`,
           category: b.category,
           plannedAmount: b.estimatedAmount,
@@ -134,8 +146,8 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
         }));
 
       const tasksToImport: Partial<TaskItem>[] = (planData.timelineTasks || [])
-        .filter((_: any, idx: number) => selectedTaskIndices.includes(idx))
-        .map((t: any) => ({
+        .filter((_: AIPlanTimelineTask, idx: number) => selectedTaskIndices.includes(idx))
+        .map((t: AIPlanTimelineTask) => ({
           title: t.title,
           description: t.description,
           dueDate: calculateDueDate(event.date, t.daysBeforeEvent || 14),
@@ -341,7 +353,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                     Recommended Aesthetic & Theme Directions
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {planData.themeSuggestions.map((thm: any, idx: number) => (
+                    {planData.themeSuggestions.map((thm: AIPlanThemeSuggestion, idx: number) => (
                       <div key={idx} className="p-4 rounded-xl border border-zinc-100 bg-zinc-50/50 space-y-2">
                         <h4 className="text-xs font-bold text-zinc-900">{thm.title}</h4>
                         <p className="text-xs text-zinc-600 leading-relaxed">{thm.description}</p>
@@ -380,7 +392,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {planData.budgetBreakdown.map((item: any, idx: number) => (
+                    {planData.budgetBreakdown.map((item: AIPlanBudgetCategory, idx: number) => (
                       <div key={idx} className="p-3.5 rounded-xl border border-zinc-200 bg-white space-y-1.5">
                         <div className="flex items-center justify-between text-xs font-semibold">
                           <span className="text-zinc-900">{item.category}</span>
@@ -404,7 +416,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                     Suggested Milestone Schedule
                   </h3>
                   <div className="divide-y divide-zinc-100">
-                    {planData.timelineTasks.map((t: any, idx: number) => {
+                    {planData.timelineTasks.map((t: AIPlanTimelineTask, idx: number) => {
                       const estimatedDate = calculateDueDate(event.date, t.daysBeforeEvent || 14);
                       return (
                         <div key={idx} className="py-2.5 flex items-start justify-between gap-4">
@@ -441,7 +453,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                       Vendor Procurement Checklist
                     </h3>
                     <div className="space-y-3">
-                      {planData.vendorChecklist.map((v: any, idx: number) => (
+                      {planData.vendorChecklist.map((v: AIPlanVendorItem, idx: number) => (
                         <div key={idx} className="p-3 rounded-xl bg-zinc-50 border border-zinc-100 space-y-1">
                           <div className="flex items-center justify-between text-xs font-semibold">
                             <span className="text-zinc-900">{v.role}</span>
@@ -465,7 +477,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                       Identified Risks & Mitigations
                     </h3>
                     <div className="space-y-2.5">
-                      {planData.risksAndMitigations.map((r: any, idx: number) => (
+                      {planData.risksAndMitigations.map((r: AIPlanRiskMitigation, idx: number) => (
                         <div key={idx} className="p-3 rounded-xl bg-zinc-50 border border-zinc-100 space-y-1 text-xs">
                           <p className="font-semibold text-zinc-900">Risk: {r.risk}</p>
                           <p className="text-zinc-600 text-[11px]">Mitigation: {r.mitigation}</p>
@@ -581,7 +593,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                         setSelectedBudgetIndices(
                           selectedBudgetIndices.length === planData.budgetBreakdown.length
                             ? []
-                            : planData.budgetBreakdown.map((_: any, i: number) => i)
+                            : planData.budgetBreakdown.map((_: AIPlanBudgetCategory, i: number) => i)
                         )
                       }
                       className="text-xs text-[#E11D48] hover:underline font-medium"
@@ -591,7 +603,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                   </div>
 
                   <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                    {planData.budgetBreakdown.map((b: any, idx: number) => {
+                    {planData.budgetBreakdown.map((b: AIPlanBudgetCategory, idx: number) => {
                       const isChecked = selectedBudgetIndices.includes(idx);
                       return (
                         <label
@@ -637,7 +649,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                         setSelectedTaskIndices(
                           selectedTaskIndices.length === planData.timelineTasks.length
                             ? []
-                            : planData.timelineTasks.map((_: any, i: number) => i)
+                            : planData.timelineTasks.map((_: AIPlanTimelineTask, i: number) => i)
                         )
                       }
                       className="text-xs text-[#E11D48] hover:underline font-medium"
@@ -647,7 +659,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
                   </div>
 
                   <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                    {planData.timelineTasks.map((t: any, idx: number) => {
+                    {planData.timelineTasks.map((t: AIPlanTimelineTask, idx: number) => {
                       const isChecked = selectedTaskIndices.includes(idx);
                       const estimatedDate = calculateDueDate(event.date, t.daysBeforeEvent || 14);
                       return (

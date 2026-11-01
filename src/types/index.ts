@@ -98,6 +98,56 @@ export interface GuestItem {
   updatedAt?: string;
 }
 
+export interface AIPlanThemeSuggestion {
+  title: string;
+  description: string;
+  colors: string[];
+}
+
+export interface AIPlanBudgetCategory {
+  category: string;
+  percentage: number;
+  estimatedAmount: number;
+  notes: string;
+}
+
+export interface AIPlanTimelineTask {
+  title: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  category: string;
+  daysBeforeEvent: number;
+}
+
+export interface AIPlanVendorItem {
+  category: string;
+  role: string;
+  checklist: string[];
+  estimatedCostRange: string;
+}
+
+export interface AIPlanActivityIdea {
+  title: string;
+  description: string;
+  type: string;
+}
+
+export interface AIPlanRiskMitigation {
+  risk: string;
+  mitigation: string;
+}
+
+export interface AIPlanData {
+  summary: string;
+  assumptions: string[];
+  themeSuggestions: AIPlanThemeSuggestion[];
+  budgetBreakdown: AIPlanBudgetCategory[];
+  timelineTasks: AIPlanTimelineTask[];
+  vendorChecklist: AIPlanVendorItem[];
+  activityIdeas: AIPlanActivityIdea[];
+  risksAndMitigations: AIPlanRiskMitigation[];
+}
+
 export interface AIPlanItem {
   id: string;
   eventId: string;

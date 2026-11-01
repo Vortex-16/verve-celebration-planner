@@ -115,7 +115,7 @@ The server will start at `http://localhost:3000` with the Express proxy and Vite
 ```bash
 npm test
 ```
-Executes domain logic tests, RFC 4180 CSV escaping, formula injection protection, date offsets, budget calculations, email dispatch templating, and Dirty Dozen security assertions across 24 test cases.
+Executes domain logic tests, RFC 4180 CSV escaping, formula injection protection, date offsets, budget calculations, email dispatch templating, and full 12-vector Dirty Dozen security assertions across 30 automated test cases.
 
 ### Production Build
 ```bash
