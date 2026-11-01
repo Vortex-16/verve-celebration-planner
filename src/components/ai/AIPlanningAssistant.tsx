@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '../../lib/budget-math.ts';
 import { calculateDueDate, formatDisplayDate } from '../../lib/date-utils.ts';
-import { getClientDeterministicFallbackPlan, getClientDomainAdvisorAdvice } from '../../lib/plan-generator-fallback.ts';
 import type { EventItem, BudgetItem, TaskItem, AIPlanItem } from '../../types/index.ts';
 
 interface AIPlanningAssistantProps {
@@ -64,50 +63,38 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
     setApplySuccessMsg('');
 
     try {
-      let plan: any;
-      let source = 'gemini_ai';
+      const res = await fetch('/api/ai/generate-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: event.name,
+          eventType: event.eventType,
+          date: event.date,
+          totalBudget: event.totalBudget,
+          currency: event.currency,
+          guestCount: event.guestCount,
+          location: event.location,
+          locationType: event.locationType,
+          theme: event.theme,
+          atmosphere: event.atmosphere,
+          notes: event.notes,
+        }),
+      });
 
-      try {
-        const res = await fetch('/api/ai/generate-plan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: event.name,
-            eventType: event.eventType,
-            date: event.date,
-            totalBudget: event.totalBudget,
-            currency: event.currency,
-            guestCount: event.guestCount,
-            location: event.location,
-            locationType: event.locationType,
-            theme: event.theme,
-            atmosphere: event.atmosphere,
-            notes: event.notes,
-          }),
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          plan = data.plan;
-          source = data.source || 'gemini_ai';
-        } else {
-          plan = getClientDeterministicFallbackPlan(event);
-          source = 'deterministic_blueprint';
-        }
-      } catch {
-        plan = getClientDeterministicFallbackPlan(event);
-        source = 'deterministic_blueprint';
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to generate plan');
       }
 
-      setPlanData(plan);
-      setPlanSource(source);
+      setPlanData(data.plan);
+      setPlanSource(data.source || 'gemini_ai');
 
       // Pre-select all suggested items for the review modal
-      if (plan.budgetBreakdown) {
-        setSelectedBudgetIndices(plan.budgetBreakdown.map((_: any, idx: number) => idx));
+      if (data.plan.budgetBreakdown) {
+        setSelectedBudgetIndices(data.plan.budgetBreakdown.map((_: any, idx: number) => idx));
       }
-      if (plan.timelineTasks) {
-        setSelectedTaskIndices(plan.timelineTasks.map((_: any, idx: number) => idx));
+      if (data.plan.timelineTasks) {
+        setSelectedTaskIndices(data.plan.timelineTasks.map((_: any, idx: number) => idx));
       }
 
       // Save plan record to history
@@ -115,8 +102,8 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
         id: `plan-${Date.now()}`,
         eventId: event.id,
         userId: event.userId,
-        summary: plan.summary,
-        contentJson: JSON.stringify(plan),
+        summary: data.plan.summary,
+        contentJson: JSON.stringify(data.plan),
         status: 'proposed',
         createdAt: new Date().toISOString(),
       };
@@ -181,37 +168,26 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
     setIsChatLoading(true);
 
     try {
-      let reply = '';
-      try {
-        const res = await fetch('/api/ai/advisor-chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: userText,
-            eventContext: {
-              name: event.name,
-              eventType: event.eventType,
-              date: event.date,
-              totalBudget: event.totalBudget,
-              currency: event.currency,
-              guestCount: event.guestCount,
-            },
-          }),
-        });
+      const res = await fetch('/api/ai/advisor-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userText,
+          eventContext: {
+            name: event.name,
+            eventType: event.eventType,
+            date: event.date,
+            totalBudget: event.totalBudget,
+            currency: event.currency,
+            guestCount: event.guestCount,
+          },
+        }),
+      });
 
-        if (res.ok) {
-          const data = await res.json();
-          reply = data.reply;
-        } else {
-          reply = getClientDomainAdvisorAdvice(userText, event);
-        }
-      } catch {
-        reply = getClientDomainAdvisorAdvice(userText, event);
-      }
-
+      const data = await res.json();
       setChatMessages((prev) => [
         ...prev,
-        { role: 'assistant', text: reply || getClientDomainAdvisorAdvice(userText, event) },
+        { role: 'assistant', text: data.reply || 'I could not generate an answer. Please retry.' },
       ]);
     } catch (err) {
       console.error('Chat error:', err);
@@ -219,7 +195,7 @@ export const AIPlanningAssistant: React.FC<AIPlanningAssistantProps> = ({
         ...prev,
         {
           role: 'assistant',
-          text: getClientDomainAdvisorAdvice(userText, event),
+          text: 'The advisory service is currently unavailable. Please review your budget and vendor notes or retry in a moment.',
         },
       ]);
     } finally {

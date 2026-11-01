@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Calendar,
@@ -60,6 +60,17 @@ export const EventWizardModal: React.FC<EventWizardModalProps> = ({
   const [notes, setNotes] = useState(initialEvent?.notes || '');
   const [generateAIPlan, setGenerateAIPlan] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -134,11 +145,16 @@ export const EventWizardModal: React.FC<EventWizardModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-      <div className="w-full max-w-xl rounded-2xl bg-white border border-zinc-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="wizard-modal-title"
+        className="w-full max-w-xl rounded-2xl bg-white border border-zinc-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-zinc-50/50">
           <div>
-            <h2 className="text-base font-bold text-zinc-900 tracking-tight">
+            <h2 id="wizard-modal-title" className="text-base font-bold text-zinc-900 tracking-tight">
               {initialEvent ? 'Edit Celebration' : 'Plan a New Celebration'}
             </h2>
             <p className="text-xs text-zinc-600 mt-0.5">

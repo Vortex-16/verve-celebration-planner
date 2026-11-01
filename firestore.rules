@@ -50,7 +50,7 @@ service cloud.firestore {
       }
 
       allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow list: if isSignedIn(); // client must query where userId == request.auth.uid
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow create: if isSignedIn() &&
         isValidId(eventId) &&
         isValidEvent(request.resource.data) &&

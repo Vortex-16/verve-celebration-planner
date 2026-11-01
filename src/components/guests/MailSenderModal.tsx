@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Mail,
   Send,
@@ -46,6 +46,17 @@ export const MailSenderModal: React.FC<MailSenderModalProps> = ({
   const [isSending, setIsSending] = useState(false);
   const [sendProgress, setSendProgress] = useState(0);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSimulatedAutoSend = async () => {
@@ -78,14 +89,19 @@ export const MailSenderModal: React.FC<MailSenderModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-white border border-zinc-200 shadow-2xl p-6 flex flex-col max-h-[90vh]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mail-sender-title"
+        className="w-full max-w-lg rounded-2xl bg-white border border-zinc-200 shadow-2xl p-6 flex flex-col max-h-[90vh]"
+      >
         <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center">
               <Mail className="w-4 h-4 text-[#E11D48]" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-zinc-900">
+              <h3 id="mail-sender-title" className="text-sm font-bold text-zinc-900">
                 {targetGuest ? `Send Invitation to ${targetGuest.name}` : 'Automatic Email Dispatcher'}
               </h3>
               <p className="text-xs text-zinc-600">
@@ -96,6 +112,7 @@ export const MailSenderModal: React.FC<MailSenderModalProps> = ({
           <button
             onClick={onClose}
             className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 cursor-pointer"
+            aria-label="Close email dispatcher"
           >
             <X className="w-4 h-4" />
           </button>
@@ -111,8 +128,9 @@ export const MailSenderModal: React.FC<MailSenderModalProps> = ({
           ) : (
             <>
               <div>
-                <label className="block text-xs font-semibold text-zinc-800 mb-1">Subject Line</label>
+                <label htmlFor="mail-subject-input" className="block text-xs font-semibold text-zinc-800 mb-1">Subject Line</label>
                 <input
+                  id="mail-subject-input"
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
@@ -121,10 +139,11 @@ export const MailSenderModal: React.FC<MailSenderModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-800 mb-1">
+                <label htmlFor="mail-template-input" className="block text-xs font-semibold text-zinc-800 mb-1">
                   Message Template <span className="text-zinc-600 text-[10px]">({'{GuestName}'} dynamic tag)</span>
                 </label>
                 <textarea
+                  id="mail-template-input"
                   rows={6}
                   value={template}
                   onChange={(e) => setTemplate(e.target.value)}

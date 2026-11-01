@@ -37,10 +37,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <ToastContext.Provider value={{ showToast }}>
       {children}
       {/* Toast viewport overlay */}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none">
+      <div
+        role="region"
+        aria-label="Notification alerts"
+        className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"
+      >
         {toasts.map((t) => (
           <div
             key={t.id}
+            role="status"
+            aria-live="polite"
             className={`pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-2xl shadow-xl border text-xs font-medium transition-all transform translate-y-0 ${
               t.type === 'success'
                 ? 'bg-zinc-900 text-white border-zinc-800'
@@ -57,7 +63,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             </div>
             <button
               onClick={() => removeToast(t.id)}
-              className="p-1 rounded-md text-zinc-400 hover:text-white transition cursor-pointer"
+              aria-label="Dismiss notification"
+              className="p-1 rounded-md text-zinc-400 hover:text-white transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
             >
               <X className="w-3.5 h-3.5" />
             </button>

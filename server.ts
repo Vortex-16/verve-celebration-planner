@@ -14,7 +14,39 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-app.use(express.json({ limit: '10mb' }));
+// Security headers
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
+app.use(express.json({ limit: '2mb' }));
+
+// In-memory rate limiting to prevent Denial of Wallet / brute-force abuse
+const requestCounts = new Map<string, { count: number; resetAt: number }>();
+function rateLimiter(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const ip = req.ip || 'anonymous';
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxRequests = 40; // 40 requests per minute
+
+  const record = requestCounts.get(ip);
+  if (!record || now > record.resetAt) {
+    requestCounts.set(ip, { count: 1, resetAt: now + windowMs });
+    return next();
+  }
+
+  if (record.count >= maxRequests) {
+    return res.status(429).json({ error: 'Too many requests. Please wait a moment before trying again.' });
+  }
+
+  record.count += 1;
+  next();
+}
+
+app.use('/api/ai', rateLimiter);
 
 // Initialize Google GenAI client (Server-Side only)
 const apiKey = process.env.GEMINI_API_KEY || '';
@@ -26,6 +58,15 @@ const ai = new GoogleGenAI({
     },
   },
 });
+
+export interface EventAdviceContext {
+  name?: string;
+  eventType?: string;
+  date?: string;
+  totalBudget?: number;
+  currency?: string;
+  guestCount?: number;
+}
 
 // Zod schemas for AI request validation
 const GeneratePlanRequestSchema = z.object({
@@ -183,7 +224,7 @@ function getDeterministicFallbackPlan(event: z.infer<typeof GeneratePlanRequestS
 }
 
 // Curated domain advice fallback when external LLM experiences transient 503
-function getDomainAdvisorAdvice(question: string, context?: any): string {
+function getDomainAdvisorAdvice(question: string, context?: EventAdviceContext): string {
   const q = question.toLowerCase();
 
   if (q.includes('ratio') || q.includes('staff') || q.includes('server') || q.includes('waiter')) {

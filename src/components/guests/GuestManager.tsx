@@ -275,13 +275,13 @@ export const GuestManager: React.FC<GuestManagerProps> = ({
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-zinc-200 bg-zinc-50/70 text-zinc-600 font-semibold uppercase tracking-wider text-[11px]">
-                  <th className="py-3 px-4">Guest Name</th>
-                  <th className="py-3 px-4">Group / Circle</th>
-                  <th className="py-3 px-4">RSVP Status</th>
-                  <th className="py-3 px-4">Plus-Ones</th>
-                  <th className="py-3 px-4">Dietary & Accessibility</th>
-                  <th className="py-3 px-4">Invitation</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th scope="col" className="py-3 px-4">Guest Name</th>
+                  <th scope="col" className="py-3 px-4">Group / Circle</th>
+                  <th scope="col" className="py-3 px-4">RSVP Status</th>
+                  <th scope="col" className="py-3 px-4">Plus-Ones</th>
+                  <th scope="col" className="py-3 px-4">Dietary & Accessibility</th>
+                  <th scope="col" className="py-3 px-4">Invitation</th>
+                  <th scope="col" className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100">

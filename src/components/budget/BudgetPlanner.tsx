@@ -291,12 +291,12 @@ export const BudgetPlanner: React.FC<BudgetPlannerProps> = ({
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-zinc-200 bg-zinc-50/70 text-zinc-600 font-semibold uppercase tracking-wider text-[11px]">
-                  <th className="py-3 px-4">Title & Notes</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Planned</th>
-                  <th className="py-3 px-4">Actual Spend</th>
-                  <th className="py-3 px-4">Payment Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th scope="col" className="py-3 px-4">Title & Notes</th>
+                  <th scope="col" className="py-3 px-4">Category</th>
+                  <th scope="col" className="py-3 px-4">Planned</th>
+                  <th scope="col" className="py-3 px-4">Actual Spend</th>
+                  <th scope="col" className="py-3 px-4">Payment Status</th>
+                  <th scope="col" className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100">

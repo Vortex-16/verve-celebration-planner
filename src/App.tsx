@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext.tsx';
 import { ToastProvider, useToast } from './context/ToastContext.tsx';
+import { ErrorBoundary } from './components/layout/ErrorBoundary.tsx';
 import { Navbar, ActiveTab } from './components/layout/Navbar.tsx';
 import { OfflineBanner } from './components/layout/OfflineBanner.tsx';
 import { WelcomeView } from './components/marketing/WelcomeView.tsx';
@@ -384,6 +385,14 @@ function MainApp() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-[#18181B] flex flex-col justify-between">
+      {/* Accessible skip link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-zinc-900 focus:text-white focus:rounded-xl focus:shadow-xl focus:text-xs focus:font-semibold focus:outline-none focus:ring-2 focus:ring-[#E11D48]"
+      >
+        Skip to main content
+      </a>
+
       <div>
         {/* Navigation Bar */}
         <Navbar
@@ -399,7 +408,7 @@ function MainApp() {
         />
 
         {/* Main Content Viewport */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 outline-none">
           {selectedEvent ? (
             <>
               {activeTab === 'overview' && (
@@ -530,10 +539,12 @@ function MainApp() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <MainApp />
-      </ToastProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <MainApp />
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

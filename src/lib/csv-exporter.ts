@@ -2,13 +2,18 @@ import type { EventItem, BudgetItem, TaskItem, VendorItem, GuestItem } from '../
 import { formatCurrency } from './budget-math.ts';
 
 /**
- * Cleanly escapes field values for RFC 4180 CSV compliance
+ * Cleanly escapes field values for RFC 4180 CSV compliance and OWASP formula injection protection
  */
 export function escapeCsvField(field: unknown): string {
   if (field === null || field === undefined) {
     return '""';
   }
-  const str = String(field);
+  let str = String(field);
+  // Neutralize CSV formula injection (OWASP CSV Injection / Excel DDE)
+  // Check if string starts with formula triggers (=, @, \t, \r) or +/- followed by non-digit chars
+  if (/^[=@\t\r]/.test(str) || /^[+\-][^0-9]/.test(str)) {
+    str = `'${str}`;
+  }
   // If field contains quotes, commas, or newlines, enclose in double quotes and escape internal quotes
   if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
     return `"${str.replace(/"/g, '""')}"`;

@@ -1,0 +1,846 @@
+# MASTER BUILD PROMPT — CELEBRATION & EVENT PLANNER
+
+## 1. Your Role and Engineering Standards
+
+Act as a Senior Full-Stack Software Engineer, Staff-Level Software Architect, Product Designer, Security Engineer, QA Engineer, and AI Application Engineer working together to build a production-minded web application.
+
+You are responsible for the complete implementation, not merely a UI mockup, prototype, architecture document, or collection of disconnected components.
+
+Build a polished, scalable, secure, accessible, testable, AI-powered **Celebration & Event Planner** that enables users to organize weddings, birthdays, anniversaries, college festivals, community gatherings, cultural celebrations, and other personal or public events.
+
+The application must be usable on mobile phones, tablets, laptops, and desktops. It must also work as an installable Progressive Web App (PWA).
+
+Treat this as a serious software engineering project. Prioritize:
+
+1. Alignment with the original problem statement.
+2. Excellent user experience and visual consistency.
+3. Correctness of business logic and calculations.
+4. Secure authentication, authorization, and data handling.
+5. Maintainable, modular, and scalable architecture.
+6. Reliable AI integration with graceful failure handling.
+7. Performance, accessibility, offline resilience, and responsive design.
+8. Automated testing, documentation, and reproducible deployment.
+
+Do not sacrifice functional correctness for visual effects or add unnecessary infrastructure merely to make the architecture look sophisticated.
+
+## 2. Product Vision
+
+Create an intelligent event-planning workspace that transforms a user's event idea into an actionable, customizable plan.
+
+A user should be able to describe an event, specify their budget and preferences, and receive a structured planning experience containing:
+
+- An event overview and planning dashboard.
+- A realistic, editable budget breakdown.
+- A date-aware planning timeline.
+- Vendor and service-provider checklists.
+- Task assignments, deadlines, and progress tracking.
+- Personalized theme, decoration, activity, food, and entertainment ideas.
+- Guest and RSVP management where appropriate.
+- AI-assisted recommendations and plan revisions.
+- A clear view of estimated spending versus actual spending.
+- A mobile-friendly experience that remains useful when connectivity is limited.
+
+The application should reduce planning complexity, prevent forgotten tasks, help users control spending, and make event preparation more organized.
+
+Do not build a generic chatbot with an event-themed landing page. Build an actual event-management product with AI as an integrated capability.
+
+## 3. Technology Stack
+
+Use the following stack unless the existing repository has a compelling, documented reason to use something different.
+
+### Frontend
+- Next.js App Router.
+- React and TypeScript with strict type checking.
+- Tailwind CSS.
+- A consistent, accessible component system using shadcn/ui and Radix UI primitives where appropriate.
+- Lucide icons.
+- React Hook Form and Zod for form management and validation.
+- A lightweight charting library for budget visualization.
+- Framer Motion or Motion for restrained, purposeful animations.
+
+### Backend
+- Next.js Route Handlers or Server Actions for application operations.
+- A clearly separated service and domain layer.
+- PostgreSQL as the primary relational database.
+- Prisma ORM or Drizzle ORM; choose one and use it consistently.
+- A secure authentication solution such as Auth.js or an equivalent maintained provider.
+- Object storage only if the product actually needs uploaded images or documents.
+
+### AI
+- Gemini API through a server-side integration.
+- Use the currently supported official Google GenAI SDK and model identifiers available in the execution environment.
+- Read model names and provider settings from environment variables when appropriate.
+- Never hardcode a model identifier based on an unverified assumption about availability.
+- Use structured output and Zod validation for generated plans.
+
+### PWA
+- Web App Manifest.
+- Service worker with a maintained PWA implementation compatible with the chosen Next.js version.
+- Installability, app icons, offline fallback, update handling, and sensible caching.
+- Offline support for selected read and write workflows where safe and practical.
+
+### Testing and Quality
+- Vitest or Jest for unit and integration tests.
+- React Testing Library for UI behavior.
+- Playwright for critical end-to-end flows.
+- ESLint, formatting, TypeScript checks, and production builds.
+
+Before implementation, inspect the existing repository, package versions, available tooling, and deployment constraints. Reuse working infrastructure instead of unnecessarily replacing it.
+
+If you choose a different library, explain the technical reason briefly and remain consistent throughout the codebase.
+
+## 4. Product Design System
+
+The visual experience is a core requirement.
+
+Design a modern, premium, iOS-inspired interface with the clarity of Apple's software design language and the practical usability of a contemporary productivity application.
+
+The result must be original. Do not copy Apple's proprietary screens or imitate a specific product pixel for pixel.
+
+### Visual direction
+
+- Use a restrained palette built around off-white, charcoal, soft gray, and a controlled red accent.
+- Support a coherent dark theme if feasible without compromising the primary experience.
+- Use clean typography, consistent spacing, balanced layouts, and generous negative space.
+- Use rounded cards, subtle borders, restrained shadows, and carefully layered surfaces.
+- Use glass-like effects selectively for floating navigation or overlays, with readable contrast.
+- Prefer solid surfaces and subtle tonal variation over gradients.
+- Avoid neon colors, excessive gradients, overused purple AI aesthetics, glowing borders, and decorative animation.
+- Use real visual hierarchy instead of making every component large or bold.
+- Keep icons consistent and use labels where icon-only controls would be ambiguous.
+- Use realistic event content, useful empty states, skeleton loaders, and clear success/error feedback.
+
+### Layout and interaction
+
+Create a cohesive application shell with:
+
+- A refined landing page explaining the product's value.
+- An authenticated application dashboard.
+- A desktop sidebar or similarly effective navigation system.
+- Mobile bottom navigation or an equally usable compact navigation pattern.
+- A prominent action for creating an event.
+- Search, filters, and contextual actions where useful.
+- A clear event workspace with overview, budget, tasks, timeline, vendors, guests, and AI assistance.
+- Responsive tables that transform into usable mobile layouts.
+- Dialogs, drawers, and sheets for focused workflows.
+- Confirmation for destructive actions.
+- Keyboard-accessible navigation and visible focus states.
+
+Use purposeful micro-interactions, such as task completion feedback, smooth panel transitions, and responsive buttons. Respect reduced-motion preferences.
+
+Do not put every feature into a single dashboard. Use progressive disclosure and organize information around actual user workflows.
+
+## 5. Main Application Modules
+
+Implement the following modules as an integrated application.
+
+### A. Authentication and User Workspace
+
+Support a suitable authentication flow, including sign-in, sign-out, session handling, and protected application routes.
+
+Each user must only access their authorized events, guests, vendors, tasks, expenses, and related information.
+
+Provide clear onboarding and a useful first-run experience.
+
+If authentication or database credentials are unavailable during development, implement a clearly identified local development mode without pretending that production authentication is active.
+
+### B. Event Creation Wizard
+
+Build a guided, validated event creation flow.
+
+Collect relevant information such as:
+
+- Event name and event type.
+- Event date and optional end date.
+- Location or online/hybrid format.
+- Estimated total budget and currency.
+- Expected guest count.
+- Theme, style, and atmosphere.
+- Dietary, cultural, accessibility, or other relevant requirements.
+- Planning preferences and additional notes.
+
+Make the form adapt to the event type. For example, weddings may need ceremony and reception planning, while community events may need volunteer coordination and public-facing logistics.
+
+Allow users to save drafts, navigate backward, and revise details.
+
+Validate date ranges, nonnegative budgets, guest counts, and required fields.
+
+Do not request sensitive personal information unless it is genuinely necessary.
+
+### C. Event Dashboard
+
+Create an actionable overview showing:
+
+- Upcoming events.
+- Days remaining until an event.
+- Overall task completion.
+- Budget utilization.
+- Pending and overdue tasks.
+- Important upcoming deadlines.
+- Vendor booking status.
+- Recent changes and relevant reminders.
+
+All metrics must come from actual application data. Never display fabricated statistics as if they were real.
+
+Use meaningful empty states for new users.
+
+### D. Budget Management
+
+Build a complete event-budget module.
+
+Features:
+
+- Suggested budget categories.
+- Editable planned allocations.
+- Individual expense records.
+- Planned versus actual spending.
+- Paid, pending, and partially paid statuses where appropriate.
+- Remaining budget.
+- Category-level breakdown.
+- Expense notes and optional vendor associations.
+- Warnings when spending approaches or exceeds the budget.
+
+Use a single, documented currency representation and precise decimal or integer-minor-unit arithmetic. Do not use floating-point arithmetic for financial calculations.
+
+Enforce business rules, including nonnegative amounts and valid currency values.
+
+Clearly distinguish AI-generated estimates from user-entered or vendor-confirmed amounts. An estimate must never be presented as a confirmed quotation.
+
+Budget calculations must be performed by trusted application logic, not by the LLM.
+
+### E. Timeline and Task Management
+
+Generate a date-aware planning timeline containing tasks, deadlines, priorities, and completion states.
+
+Each task should support:
+
+- Title and description.
+- Due date.
+- Priority.
+- Status.
+- Optional assignee.
+- Optional category.
+- Dependencies when needed.
+- Completion timestamp.
+
+Automatically adjust suggested task dates when the event date changes, but do not silently overwrite user-customized deadlines.
+
+Handle overdue tasks, completed tasks, missing event dates, and time zones correctly.
+
+Support sorting, filtering, completion toggles, and useful progress indicators.
+
+### F. Vendor Management
+
+Build a vendor checklist and management workspace.
+
+Include categories such as:
+
+- Catering.
+- Venue.
+- Photography and videography.
+- Decoration and floristry.
+- Music and entertainment.
+- Transportation.
+- Equipment and rentals.
+- Invitations and printing.
+- Other event-specific services.
+
+Allow users to record vendor name, contact details, quoted price, booking status, notes, payment status, and relevant deadlines.
+
+Support vendor comparison and booking progress.
+
+Do not fabricate real vendor availability, contact information, reviews, prices, or booking confirmations.
+
+If real vendor discovery is not implemented, label entries as user-managed records or AI-generated suggestions rather than verified providers.
+
+### G. Guest and RSVP Management
+
+Provide a useful guest-management module with:
+
+- Guest records.
+- RSVP status.
+- Optional group or household association.
+- Dietary or accessibility notes where appropriate.
+- Guest-count summaries.
+- Invitation status.
+
+Restrict access to guest information. Do not expose guest lists through public event pages or unrestricted API responses.
+
+Do not collect unnecessary personal details, and avoid placing personal guest information in AI prompts unless required for the requested feature.
+
+### H. Personalized Ideas and Recommendations
+
+Provide recommendations based on the user's actual event configuration.
+
+Ideas may include:
+
+- Themes and color palettes.
+- Decorations.
+- Food and beverage planning.
+- Entertainment and activities.
+- Budget-saving alternatives.
+- Cultural or seasonal considerations.
+- Accessibility-friendly arrangements.
+- Age-appropriate activities where relevant.
+
+Every recommendation should explain its relevance and, when useful, provide an estimated cost range and a practical next step.
+
+Recommendations must respect budget limits and stated constraints.
+
+Avoid stereotypes when suggesting cultural themes. Ask for clarification when an important preference is unknown instead of assuming it.
+
+### I. AI Planning Assistant
+
+Integrate Gemini as an assistant within the event workspace.
+
+The assistant should be able to:
+
+1. Generate an initial event plan from validated event details.
+2. Produce a proposed budget allocation.
+3. Suggest tasks and deadlines.
+4. Generate vendor categories and booking checklists.
+5. Recommend event themes and activities.
+6. Identify likely omissions and planning risks.
+7. Suggest budget-saving alternatives.
+8. Revise a plan when the user changes constraints.
+9. Explain why recommendations were made.
+10. Answer event-specific questions using the relevant authorized event context.
+
+Use separate, well-defined prompts or services for planning, budgeting suggestions, task generation, and conversational assistance when that improves maintainability.
+
+### Structured AI output
+
+Define validated schemas for AI-generated content.
+
+A generated plan should contain structured sections such as:
+
+- Summary.
+- Assumptions.
+- Recommendations.
+- Budget allocations.
+- Tasks with relative or absolute deadlines.
+- Vendor categories.
+- Risks and missing information.
+- Suggested next actions.
+
+Validate all model output using Zod before it reaches the UI or database.
+
+Reject malformed data and provide a recoverable error state. Use bounded retries where appropriate.
+
+Do not execute arbitrary code, SQL, URLs, shell commands, or tools produced by the model.
+
+AI-generated data should enter the application as a proposal. Let the user review, edit, and approve it before committing consequential changes.
+
+Never allow an AI response to directly authorize payments, send invitations, delete data, book vendors, or modify unrelated events.
+
+### AI reliability and cost control
+
+- Keep API keys on the server.
+- Set request timeouts and sensible output-token limits.
+- Validate and limit input sizes.
+- Apply per-user rate limits.
+- Avoid unnecessary repeated model calls.
+- Cache only safe, appropriate results.
+- Handle rate limits, provider outages, malformed responses, and quota exhaustion.
+- Do not log secrets, complete guest lists, or sensitive request payloads.
+- Track model usage and operational errors without exposing personal information.
+- Provide a helpful non-AI fallback when possible.
+- Clearly indicate when a suggestion was AI-generated.
+- Never claim that a recommendation has been independently verified when it has not.
+
+If the selected Gemini model or API is unavailable, report the configuration issue and use a documented fallback only if one is configured. Do not silently switch to a fake AI implementation.
+
+## 6. Architecture and Code Organization
+
+Use a modular architecture with clear separation of responsibilities.
+
+A suitable starting structure is:
+
+app/
+  (marketing)/
+  (auth)/
+  (workspace)/
+  api/
+components/
+  ui/
+  layout/
+  events/
+  budget/
+  timeline/
+  vendors/
+  guests/
+  assistant/
+lib/
+  auth/
+  db/
+  validation/
+  security/
+  ai/
+  errors/
+  logging/
+  utilities/
+modules/
+  events/
+  budgeting/
+  tasks/
+  vendors/
+  guests/
+  planning/
+  assistant/
+prisma/
+  schema.prisma
+public/
+  icons/
+  manifest.webmanifest
+tests/
+  unit/
+  integration/
+  e2e/
+docs/
+
+Adapt the exact structure to the chosen framework and existing repository.
+
+Architectural requirements:
+
+- Keep UI components focused and reusable.
+- Keep business rules out of presentation components.
+- Centralize validation schemas and shared domain types where appropriate.
+- Separate AI prompting, provider communication, and output validation.
+- Keep database access behind clear service or repository boundaries.
+- Use typed service interfaces and predictable error handling.
+- Avoid circular dependencies and giant components.
+- Avoid unnecessary abstractions, excessive context providers, and overengineering.
+- Use pagination for growing datasets.
+- Use transactions for related database updates.
+- Use database indexes for common queries.
+- Enforce authorization on the server for every protected operation.
+- Document architectural decisions that materially affect future development.
+
+Use strict TypeScript. Avoid `any`, unexplained type assertions, duplicated business logic, dead code, placeholder implementations, and broad error suppression.
+
+Do not expose database models directly as unrestricted API contracts.
+
+## 7. Database Design and Data Integrity
+
+Design a normalized relational schema suitable for the application.
+
+Consider entities such as:
+
+- User.
+- Event.
+- EventMember or EventPermission if collaboration is supported.
+- BudgetCategory.
+- Expense.
+- Task.
+- Vendor.
+- Guest.
+- Invitation or RSVP.
+- AIPlanningSession or PlanRevision when useful.
+
+Define primary keys, foreign keys, ownership relationships, appropriate uniqueness constraints, indexes, and timestamps.
+
+Use explicit deletion policies and protect important relationships from accidental cascading deletion.
+
+Support database migrations and a repeatable development seed process.
+
+Ensure users cannot access or modify another user's resources by changing an identifier in a request.
+
+If event collaboration is implemented, distinguish event owners, editors, and viewers. Check permissions server-side rather than trusting the frontend.
+
+Treat PostgreSQL as the authoritative source of persistent data. Do not treat browser storage as a substitute for database authorization or durable server-side storage.
+
+## 8. Security Requirements
+
+Apply security by design, following relevant OWASP guidance.
+
+### Authentication and authorization
+- Validate sessions on the server.
+- Enforce resource ownership and event-level permissions.
+- Protect all private API routes and server actions.
+- Prevent insecure direct object reference vulnerabilities.
+- Use secure session and cookie settings appropriate to the deployment.
+- Implement safe account and session lifecycle handling.
+
+### Input and output
+- Validate untrusted input on the server using schemas.
+- Validate query parameters, route identifiers, file metadata, and request sizes.
+- Prevent SQL injection through safe ORM usage.
+- Avoid unsafe HTML rendering and sanitize rich text where required.
+- Prevent mass assignment by explicitly selecting mutable fields.
+- Never trust client-side validation alone.
+
+### Web security
+- Apply suitable CSRF protections where applicable.
+- Configure appropriate CORS policies.
+- Use security headers and a considered Content Security Policy.
+- Protect against open redirects and unsafe URL handling.
+- Add rate limits to authentication and expensive AI operations.
+- Use safe error messages that do not expose internal stack traces.
+- Keep secrets out of client bundles, source control, and logs.
+
+### AI-specific security
+- Treat user input, uploaded documents, and retrieved content as untrusted.
+- Defend against prompt injection and attempts to reveal system prompts or private event data.
+- Provide the model only the minimum authorized context needed for the request.
+- Do not rely on prompt instructions as the only authorization boundary.
+- Validate model output before using it.
+- Do not allow model output to control arbitrary database queries or application permissions.
+
+### Data protection
+- Avoid collecting unnecessary personal information.
+- Keep guest information private.
+- Do not put secrets or private event data into public URLs.
+- Avoid sensitive information in analytics, logs, or AI-provider requests.
+- Define appropriate data retention and deletion behavior.
+
+Never claim the application is secure merely because validation exists. Verify the relevant controls and document any remaining limitations.
+
+## 9. Progressive Web Application
+
+Deliver a genuine installable PWA, not just a responsive website.
+
+Implement:
+
+- A valid web app manifest.
+- App name, short name, theme color, background color, and appropriate display mode.
+- Suitable icons, including required platform sizes.
+- A service worker compatible with the selected Next.js setup.
+- An installation experience on supported platforms.
+- An offline fallback page.
+- Useful caching rules.
+- Clear update detection and refresh behavior.
+- Installability and service-worker tests where feasible.
+
+### Offline behavior
+
+Support a deliberate subset of offline workflows, such as viewing recently available event information and preparing local edits.
+
+Use IndexedDB or another suitable client-side persistence mechanism for offline drafts and queued mutations when justified.
+
+When connectivity returns, synchronize changes through authenticated server operations.
+
+Handle stale data, conflicts, duplicate submissions, and synchronization failures explicitly. Never silently overwrite newer server data.
+
+Do not cache private API responses in a shared or indiscriminate service-worker cache.
+
+Do not cache authenticated pages or sensitive guest information using public cache-first strategies.
+
+Use network-first or similarly appropriate strategies for private, changing data. Cache static assets and public resources separately.
+
+Clearly communicate which features are available offline and when an operation still requires connectivity.
+
+## 10. Accessibility
+
+Target WCAG 2.2 AA where applicable.
+
+Implement:
+
+- Semantic HTML.
+- Keyboard-operable controls.
+- Visible focus indicators.
+- Correct labels and accessible form errors.
+- Appropriate ARIA only where needed.
+- Accessible dialogs, menus, drawers, and live status messages.
+- Sufficient text and control contrast.
+- Reduced-motion support.
+- Screen-reader-friendly status indicators.
+- Touch targets appropriate for mobile interaction.
+- Accessible charts with textual summaries.
+- Error states that explain how to recover.
+
+Do not communicate budget status, task status, or warnings through color alone.
+
+Test important flows with keyboard navigation and automated accessibility checks. Automated checks are necessary but not sufficient.
+
+## 11. Performance and Efficiency
+
+Optimize for realistic use on mid-range devices and ordinary mobile networks.
+
+- Use server rendering where beneficial.
+- Keep client components limited to interactive areas.
+- Avoid unnecessary client-side JavaScript.
+- Lazy-load heavy visualizations and nonessential modules.
+- Optimize images and use responsive image delivery.
+- Prevent avoidable re-renders and redundant requests.
+- Add pagination and query limits.
+- Avoid N+1 database queries.
+- Use database transactions for related writes.
+- Avoid repeated AI generation for unchanged inputs.
+- Add loading states and skeletons that reflect the real layout.
+- Prevent layout shifts.
+- Handle slow requests and transient failures.
+
+Measure performance rather than inventing benchmark results.
+
+Aim for strong Core Web Vitals, especially LCP, INP, and CLS. Use Lighthouse or equivalent tooling to identify actual bottlenecks.
+
+## 12. Error Handling and Observability
+
+Create a consistent error-handling strategy across frontend, backend, database, and AI services.
+
+Provide:
+
+- Typed domain errors.
+- Appropriate HTTP status codes.
+- Human-readable error messages.
+- Retry behavior only where safe.
+- Request correlation IDs where useful.
+- Structured, privacy-conscious logs.
+- Health checks appropriate to the deployment.
+- Clear operational configuration documentation.
+
+Do not expose secrets, raw provider errors, stack traces, or private data to users.
+
+Distinguish validation failures, authorization failures, missing resources, rate limits, external provider failures, and internal errors.
+
+## 13. Testing Strategy
+
+Write meaningful automated tests, not just a test configuration file.
+
+### Unit tests
+Cover:
+- Budget arithmetic and rounding.
+- Budget limits and over-budget conditions.
+- Date calculations and time zones.
+- Timeline regeneration rules.
+- Task status transitions.
+- Input validation.
+- Permission and ownership helpers.
+- AI response parsing and schema validation.
+- Offline synchronization conflict logic.
+
+### Integration tests
+Cover:
+- Database persistence.
+- Event creation and editing.
+- Expense creation and updates.
+- Task and vendor management.
+- Authentication and authorization boundaries.
+- Cross-user access prevention.
+- AI-provider failure handling.
+- Rate limiting and invalid request handling.
+
+Use isolated test data and a reproducible test database strategy.
+
+### End-to-end tests
+Cover a complete user journey:
+
+1. Open the application.
+2. Create an account or enter the supported development mode.
+3. Create an event.
+4. Generate an AI-assisted planning proposal.
+5. Review and approve selected suggestions.
+6. Edit a budget allocation.
+7. Add and complete a task.
+8. Add a vendor and an expense.
+9. Verify that dashboard metrics update correctly.
+10. Refresh or reopen the application and verify persistence.
+
+Also test validation failures, mobile navigation, empty states, and important error states.
+
+Mock external AI calls in deterministic automated tests. Add a separate opt-in integration test for a configured real provider.
+
+Never report tests as passing unless they have actually run and succeeded. Distinguish written tests from executed tests.
+
+## 14. Development Experience and Documentation
+
+Provide a complete developer handoff.
+
+Include:
+
+- README with project overview and architecture.
+- Prerequisites and installation instructions.
+- Environment-variable documentation.
+- Example environment file containing placeholders only.
+- Database setup and migration commands.
+- Seed instructions.
+- Development and production commands.
+- Lint, type-check, test, and build commands.
+- PWA testing instructions.
+- Deployment guidance.
+- AI-provider configuration and troubleshooting.
+- Security limitations and known issues.
+
+Support a straightforward local development workflow.
+
+Do not commit API keys, database passwords, private certificates, real user data, or production secrets.
+
+Use the package manager already established by the repository. If no lockfile or package manager exists, choose one and commit its lockfile.
+
+## 15. Required User Experience
+
+The final application should include these primary experiences:
+
+1. Marketing or welcome page.
+2. Sign-in and account flow.
+3. First-run onboarding.
+4. Event creation wizard.
+5. Event dashboard.
+6. Event overview.
+7. Budget planner.
+8. Timeline and task manager.
+9. Vendor checklist and records.
+10. Guest and RSVP manager.
+11. AI planning assistant.
+12. Settings and data-management controls.
+13. Offline and error states.
+14. PWA installation and update experience.
+
+All primary navigation elements must lead to implemented features.
+
+All buttons, forms, dialogs, filters, charts, and interactive controls must perform their intended action.
+
+Do not use dead buttons, fake save confirmations, hardcoded dashboard metrics, decorative controls that look functional, or success messages without successful operations.
+
+If a feature is intentionally deferred, identify it clearly rather than pretending it is complete.
+
+## 16. Implementation Workflow
+
+Work in the following order.
+
+### Phase 1 — Repository inspection and planning
+
+Inspect the current project before changing it.
+
+Identify:
+- Existing framework and dependencies.
+- Current file structure.
+- Existing working features.
+- Available database and API configuration.
+- Build and deployment constraints.
+
+Create a concise implementation plan and identify major architectural decisions.
+
+Do not overwrite an existing working project with a new scaffold without a justified reason.
+
+### Phase 2 — Foundation
+
+Establish:
+- Strict TypeScript configuration.
+- Design tokens and shared UI primitives.
+- Application layout and responsive navigation.
+- Database schema and migrations.
+- Authentication and authorization.
+- Validation and error-handling conventions.
+- Environment configuration.
+
+### Phase 3 — Core event workflows
+
+Implement:
+- Event creation and editing.
+- Event dashboard.
+- Budget management.
+- Timeline and tasks.
+- Vendor records.
+- Guest and RSVP management.
+
+Ensure core business logic works before adding elaborate visual effects.
+
+### Phase 4 — AI integration
+
+Implement:
+- Server-side Gemini integration.
+- Typed prompts and structured response schemas.
+- Validated planning proposals.
+- User review and approval.
+- Failure handling, timeouts, and rate limits.
+- Clear AI-generated labeling.
+
+### Phase 5 — PWA and offline resilience
+
+Implement and verify:
+- Manifest and icons.
+- Service worker.
+- Static asset caching.
+- Offline fallback.
+- Safe local drafts and synchronization where supported.
+- Update behavior and installation guidance.
+
+### Phase 6 — Quality assurance
+
+Run:
+- Formatting and lint checks.
+- TypeScript checks.
+- Unit tests.
+- Integration tests.
+- Critical end-to-end tests.
+- Production build.
+- Accessibility checks.
+- PWA and performance checks.
+
+Fix discovered issues before declaring completion.
+
+### Phase 7 — Final handoff
+
+Provide a concise report containing:
+- Implemented features.
+- Important architecture decisions.
+- Database and migration status.
+- AI integration status.
+- PWA functionality and limitations.
+- Security measures.
+- Test commands and actual results.
+- Build status.
+- Environment variables that the developer must configure.
+- Known limitations and recommended next steps.
+
+## 17. Engineering Rules
+
+Follow these rules throughout the implementation:
+
+1. Never fabricate successful command execution, test results, API responses, or deployment status.
+2. Never replace required backend functionality with hardcoded demo data.
+3. Never expose secrets to the browser.
+4. Never trust AI-generated content without validation.
+5. Never trust a client-supplied user ID to establish ownership.
+6. Never allow AI-generated proposals to trigger consequential operations without explicit authorization and appropriate user confirmation.
+7. Never silently discard offline edits or overwrite conflicting changes.
+8. Never claim offline support for operations that cannot actually work offline.
+9. Never add a dependency without a clear reason.
+10. Never leave critical interactions as TODOs or visual placeholders.
+11. Never disable TypeScript or lint rules merely to make the build pass.
+12. Never hide errors that indicate broken business logic or security issues.
+13. Never generate a massive monolithic component when the feature can be separated cleanly.
+14. Never store monetary values as imprecise floating-point numbers.
+15. Never use fabricated vendors, quotes, or statistics as verified real-world information.
+16. Prefer the simplest architecture that satisfies the actual requirements.
+17. Preserve existing working behavior unless a change is justified and tested.
+18. Keep accessibility, security, and testing part of implementation rather than last-minute additions.
+
+## 18. Definition of Done
+
+The project is complete only when:
+
+- The application implements the event-planning problem statement end to end.
+- Core event data persists correctly.
+- Budget calculations are correct and tested.
+- Tasks and deadlines behave correctly.
+- Vendor and guest records respect authorization.
+- Gemini generates useful, validated planning proposals when configured.
+- AI failure does not break ordinary event management.
+- The interface is polished and responsive on mobile and desktop.
+- The PWA manifest, service worker, and offline behavior are implemented and verified to the extent supported by the environment.
+- Core accessibility requirements are addressed.
+- Security-sensitive operations are validated server-side.
+- Meaningful automated tests exist and their execution results are reported honestly.
+- The production build succeeds in the available environment.
+- Setup and deployment instructions are complete.
+- Remaining external configuration requirements and limitations are documented.
+
+## 19. Final Instruction
+
+Start by inspecting the repository and determining what can actually be implemented in the available environment.
+
+Then proceed incrementally, implementing real functionality rather than stopping after a plan or a beautiful landing page.
+
+After each major phase, run the relevant checks and fix regressions before continuing.
+
+If execution limits prevent completing every feature in one pass, prioritize a coherent, working vertical slice: authentication or clearly scoped development access, event creation, persisted event dashboard, correct budget management, task tracking, and a validated Gemini planning workflow. Then continue with the remaining modules and PWA functionality.
+
+Do not silently omit requirements. Maintain a checklist of implemented, tested, incomplete, and blocked features.
+
+Make reasonable engineering decisions independently. Ask questions only when a missing decision genuinely blocks implementation.
+
+The final deliverable must be a maintainable, functional, secure-by-design, AI-powered, installable event-planning application — not just a design concept or a frontend demo.
+
+Begin with repository inspection and the implementation plan, then build the application.

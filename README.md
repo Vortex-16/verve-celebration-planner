@@ -1,177 +1,123 @@
 # Verve — Intelligent Celebration & Event Planning Platform
 
-> **Challenge 5 Submission**  
-> **Challenge Statement**: *"Create a GenAI-powered planning assistant that helps users organize weddings, birthdays, and community events with budgets, timelines, vendor checklists, and personalized ideas."*
-
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
-[![React 19](https://img.shields.io/badge/React-19.0-61dafb.svg)](https://react.dev/)
-[![Gemini 3.8 Flash](https://img.shields.io/badge/AI-Gemini%203.8%20Flash-orange.svg)](https://ai.google.dev/)
-[![Firebase](https://img.shields.io/badge/Database-Firestore-FFCA28.svg)](https://firebase.google.com/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Tests Passing](https://img.shields.io/badge/Tests-6%2F6%20Passed-brightgreen.svg)]()
+Verve is an enterprise-grade celebration and milestone event planning application engineered for discerning event organizers, couples, families, and corporate producers. Built on **React 19**, **TypeScript**, **Tailwind CSS v4**, **Firebase Firestore**, and **Google Gemini 3.8 Flash**, Verve delivers end-to-end event orchestration with tactile micro-interactions and offline-first resilience.
 
 ---
 
-## 📌 Executive Summary & Chosen Vertical
+## Key Features
 
-- **Vertical**: **GenAI-Powered Milestone Event & Celebration Orchestration**
-- **Target Personas**: Couples organizing weddings, families hosting milestone birthdays/anniversaries, and organizers coordinating neighborhood community festivals.
-- **Core Value Proposition**: Replacing chaotic spreadsheets and fragmented messaging with an intelligent, end-to-end command center that generates personalized event themes, timelines, budgets, and vendor checklists within seconds using Google Gemini 3.8 Flash.
+### 1. Master Planning & Analytics Dashboard
+- **Comprehensive KPI Snapshot**: Real-time tracking of countdown timers, budget utilization percentages, pending vs. completed tasks, booked vendors, and confirmed guest headcount.
+- **RFC 4180 Multi-Section CSV Export**: Download complete planning dossiers formatted across five structured sections with OWASP CSV formula injection protection:
+  1. Celebration Overview & Constraints
+  2. Financial Budget & Actual Spend
+  3. Timeline Milestones & Task Status
+  4. Vendor Directory & Contract Specs
+  5. Guest Directory, Dietary Restrictions & RSVP Status
+- **Full Celebration CRUD**: Create new celebrations with custom budget and attendee targets, edit core parameters at any time, or safely delete events with confirmation protections.
+
+### 2. Multi-Tier Financial Budget Planner
+- **Planned vs. Actual Spend**: Categorized budget allocations with real-time variance calculations.
+- **Over-Budget Warnings**: Visual alerts and status indicators when line items exceed planned estimates.
+- **Vendor Linkage**: Tie budget line items directly to vendor contracts and track payment phases (`unpaid`, `partially_paid`, `paid`).
+
+### 3. Action-Oriented Timeline & Milestone Tracker
+- **Smart Due-Date Offsets**: Tasks automatically calculated relative to the celebration date.
+- **Priority Filtering & Urgency Tags**: Sort by urgency (`urgent`, `high`, `medium`, `low`) and overdue flags.
+- **One-Click State Toggle**: Rapid micro-interaction for marking milestones complete with undo support.
+
+### 4. Vendor Partner Directory (CRM)
+- **Direct Contact Management**: Store primary contacts, phone numbers, emails, and notes.
+- **Contract & Booking Lifecycle**: Monitor quotes, negotiation stages, and contract execution.
+- **Payment Stage Badges**: Instant status on deposits, balance settlements, and retainers.
+
+### 5. Guest Coordination & Automatic Email Dispatcher
+- **RSVP & Headcount Management**: Real-time tallies of attending guests, awaiting responses, declinations, and plus-ones.
+- **Dietary & Accessibility Tracking**: Specific meal requirements and accommodations logged per household.
+- **Automatic Email Dispatcher**:
+  - Batch automated invitation simulation with live progress bar.
+  - Dynamic `{GuestName}` template tag replacement.
+  - Native `mailto:` client launch for direct one-on-one email transmission.
+  - Automatic updates to invitation delivery status.
+
+### 6. AI Master Plan Assistant (Gemini 3.8 Flash)
+- **Server-Side AI Generation**: Secure backend proxy using `@google/genai` to generate timeline milestones, budget breakdowns, and recommendations customized to the event theme, headcount, and budget.
+- **Intelligent Advisor Chat**: Context-aware consultation on themes, etiquette, timeline scheduling, and contingency planning.
+- **Deterministic Resilience**: Graceful fallback templates guarantee uninterrupted planning even during upstream service disruptions.
+
+### 7. Progressive Web App (PWA) & Offline Resilience
+- **Service Worker Caching**: Offline access to cached events, tasks, budgets, and guests via `localStorage` sync.
+- **Installable Desktop/Mobile App**: Web App Manifest supporting standalone home-screen installation.
+- **Connectivity Toast Indicator**: Real-time detection of offline status with auto-reconnect syncing.
 
 ---
 
-## 🎯 Problem Statement Alignment
+## Technology Stack
 
-| Requirement in Challenge | Verve Solution Implementation |
+| Layer | Technology |
 |---|---|
-| **Weddings, Birthdays & Community Events** | Specialized preset templates, theme generators, and custom attributes tailored for weddings (ceremony, reception, rehearsals), birthdays (milestones, entertainment), and community galas (permits, staging). |
-| **Budgets** | Integer-cent financial engine with planned vs. actual spend tracking, category allocation breakdowns, payment status lifecycle (`unpaid`, `partially_paid`, `paid`), and visual over-budget alerts. |
-| **Timelines** | Intelligent countdown milestones with dynamic due-date offsets relative to celebration date, urgency indicators (`urgent`, `high`, `medium`, `low`), and overdue milestone detection. |
-| **Vendor Checklists** | Comprehensive vendor CRM tracking contact details, quotes, contracts, notes, and payment stage badges linked directly to budget line items. |
-| **Personalized Ideas** | Server-side Gemini 3.8 Flash AI engine that synthesizes custom themes, activity concepts, detailed checklists, and risk mitigations based on headcount, theme, and budget constraints. |
+| **Frontend Framework** | React 19 SPA with TypeScript |
+| **Styling & Design System** | Tailwind CSS v4 (Solid palette, crimson `#E11D48` accent, zero gradients, zero emojis) |
+| **Icons** | Lucide React (Strict iconography discipline) |
+| **Backend & Proxy** | Node.js + Express (`server.ts`) |
+| **AI SDK** | `@google/genai` (Gemini 3.8 Flash) |
+| **Database & Auth** | Google Firebase (Firestore Database + Firebase Authentication) |
+| **Build & Dev Tooling** | Vite 8, `tsx`, ES2022 |
+| **Offline Engine** | `vite-plugin-pwa` + Service Worker |
+| **Testing** | Node.js Test Runner (`node:test` via `tsx --test`) |
 
 ---
 
-## 🏗️ Architecture & How the Solution Works
+## Design System & Anti-Slop Guidelines
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        Client Layer (React 19 SPA)                     │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌───────────────────────┐ │
-│  │ Overview Dossier │  │  Budget Planner  │  │  Timeline & Milestones│ │
-│  └──────────────────┘  └──────────────────┘  └───────────────────────┘ │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌───────────────────────┐ │
-│  │   Vendor CRM     │  │ Guest Management │  │ AI Planning Assistant │ │
-│  └──────────────────┘  └──────────────────┘  └───────────────────────┘ │
-│         ▲                                                  ▲           │
-│         │ Local Storage Fallback / Offline PWA             │           │
-└─────────┼──────────────────────────────────────────────────┼───────────┘
-          │                                                  │
-          ▼                                                  ▼
-┌──────────────────┐                               ┌─────────────────────┐
-│  Firebase Cloud  │                               │ Express Proxy Server│
-│    Firestore     │                               │     (server.ts)     │
-│  (Multi-tenant   │                               └──────────┬──────────┘
-│   ABAC Security) │                                          │
-└──────────────────┘                                          ▼
-                                                   ┌─────────────────────┐
-                                                   │ Google Gemini 3.8   │
-                                                   │ Flash (@google/genai│
-                                                   └─────────────────────┘
-```
-
-### End-to-End User Journey:
-1. **Creation & Onboarding Wizard**: The user inputs celebration type (Wedding, Birthday, Community Event, Festival), total budget, date, headcount, and aesthetic preferences.
-2. **AI Plan Synthesis**: The backend invokes Google Gemini 3.8 Flash using a Zod-validated schema to generate customized themes, activity ideas, categorized budget distributions, timeline tasks, and vendor checklists.
-3. **Execution & Budget Tracking**: The user fine-tunes line items. The financial engine computes real-time variances and flags potential cost overruns.
-4. **Milestone Scheduling**: Tasks automatically adapt relative to the event date. Overdue milestones trigger actionable warning badges.
-5. **Vendor Management & Contract Lifecycle**: Direct contact records, quote comparisons, and status progression from inquiry to paid deposit.
-6. **Guest RSVP & Email Dispatch**: Batch invitation simulation, dynamic `{GuestName}` templating, direct `mailto:` triggers, and dietary accommodation logs.
-7. **RFC 4180 Dossier Export**: One-click download of a clean multi-section CSV dossier containing the entire celebration blueprint.
+1. **Strictly No Emojis**: Every indicator, button, and header uses purpose-built Lucide icons.
+2. **Zero Gradients**: Pure, high-contrast solid backgrounds (`#F8F9FA` off-white, `#18181B` deep charcoal, `#E11D48` crimson accent).
+3. **Tactile Micro-Interactions**: Active-press state transitions (`active:scale-95`), responsive feedback toasts on every CRUD mutation, and accessible confirmation dialogs.
+4. **Data Density**: High scannability with structured tables, pill-free metric tiles, and clean border separations.
+5. **Accessibility First (WCAG AA)**: Full keyboard navigation (Escape to dismiss modals, skip-to-content links), `aria-modal`, `role="dialog"`, `scope="col"` on tables, and `aria-live="polite"` on notifications.
 
 ---
 
-## 🧠 Approach, Logic & Engineering Decisions
-
-1. **Integer-Cent Monetary Accounting**:
-   - Floating point arithmetic (e.g., `0.1 + 0.2 === 0.30000000000000004`) is strictly forbidden for financial calculations.
-   - All currencies are stored in minor units (cents) as integers (`10000` = $100.00) and formatted dynamically using `Intl.NumberFormat`.
-2. **Server-Side AI Credential Isolation**:
-   - Client-side code never possesses the `GEMINI_API_KEY`.
-   - All AI requests pass through `server.ts`, validating requests with Zod schemas to protect against injection and denial-of-wallet exploits.
-3. **Deterministic Resilience Engine**:
-   - If the upstream AI service experiences rate limiting or network interruptions, Verve automatically activates built-in deterministic industry-standard fallback templates to ensure zero interruption to user planning.
-4. **High-Contrast Anti-Slop Design System**:
-   - Strictly zero emojis and zero busy gradients.
-   - Curated high-contrast palette (`#F8F9FA` off-white, `#18181B` deep charcoal, `#E11D48` crimson accent).
-   - High information density with structured tables, Lucide icons, and tactile micro-interactions (`active:scale-95`).
-5. **Offline-First Resilience (PWA)**:
-   - Configured with `vite-plugin-pwa` and Service Worker precaching.
-   - Dual-persistence engine syncing data seamlessly to `localStorage` when offline and Firebase Firestore when authenticated online.
-
----
-
-## 🧪 Comprehensive Evaluation Criteria Mapping
-
-### 1. Code Quality (High Impact)
-- **Strict TypeScript Typing**: Clean interfaces defined in `src/types/index.ts` with 0 type errors on `tsc --noEmit`.
-- **Component Modularity**: High separation of concerns across feature folders (`src/components/{budget,events,guests,timeline,vendors,ai}`).
-- **Clean Architecture**: Decoupled domain math (`src/lib/budget-math.ts`, `src/lib/date-utils.ts`, `src/lib/csv-exporter.ts`).
-
-### 2. Security (High Impact)
-- **Zero API Key Leakage**: Gemini API keys reside exclusively in backend environment variables (`server.ts`).
-- **Input Sanitization**: All inbound AI requests pass through strict Zod schema validation.
-- **Role-Based & Ownership Access Control (ABAC)**: Complete Firestore security rules (`firestore.rules`) enforcing user-isolated document access and subcollection ownership.
-- **Hardened Threat Model**: Tested against the "Dirty Dozen" threat payloads (impersonation, ghost fields, parent hijacking, direct root writes).
-
-### 3. Efficiency & Resource Optimization (Medium Impact)
-- **Ultra-Fast Build Time**: Vite 8 builds the entire production application in **~550ms**.
-- **Compact Footprint**: Production JavaScript bundle gzip size is **~269 KB**, guaranteeing instant initial load.
-- **Repository Size Discipline**: Total repository size is **< 1 MB** (well under the 10 MB competition limit).
-- **Sub-Second Fallbacks**: Deterministic fallbacks return valid structured data in `< 10ms`.
-
-### 4. Testing & Validation (Medium Impact)
-- Built-in test suite executing via Node.js native test runner:
-  ```bash
-  npm test
-  ```
-- **Test Coverage**:
-  - `formatCurrency`: Minor unit formatting across multiple currencies (`USD`, `EUR`, `GBP`).
-  - `parseToCents`: Currency parsing and edge-case sanitization.
-  - `calculateBudgetSummary`: Aggregation of planned vs. actual totals, category distributions, and utilization calculations.
-  - `date-utils`: Countdown remaining days, overdue flags, and dynamic relative offset calculation.
-  - `escapeCsvField`: RFC 4180 CSV escaping with embedded quotes, commas, and multiline values.
-
-### 5. Accessibility (Low Impact / Polish)
-- WCAG 2.1 AA compliant color contrast ratios across dark and light surfaces.
-- Semantic HTML elements (`<main>`, `<nav>`, `<section>`, `<article>`, `<button>`).
-- Full keyboard focus navigation and descriptive `aria-label` attributes on icon-only buttons.
-- Connectivity status toasts with assertive live announcements for screen readers.
-
----
-
-## 💭 Assumptions Made
-
-1. **Monetary Precision**: Single base currency per celebration, defaulting to USD with support for global ISO currencies.
-2. **Guest Dispatch**: Native `mailto:` launch handles client-side direct email dispatch, backed by in-app progress simulation for bulk invitations.
-3. **Offline Sync**: Local storage provides immediate persistence when Firebase credentials are not supplied or network connectivity is severed.
-4. **AI Output Structure**: The GenAI assistant expects structured JSON conforming to the defined schema for seamless ingestion into interactive tables.
-
----
-
-## 🚀 Getting Started & Local Development
+## Getting Started
 
 ### Prerequisites
 - Node.js 20+ installed
-- Git installed
+- Firebase project configured (Firestore + Auth)
+- Gemini API key (for AI planning features)
 
-### 1. Clone & Install
+### Installation
 ```bash
-git clone https://github.com/Vortex-16/verve-celebration-planner.git
-cd verve-celebration-planner
+# Clone repository
+git clone https://github.com/verve/celebration-planner.git
+cd celebration-planner
+
+# Install dependencies
 npm install
 ```
 
-### 2. Configure Environment
-Copy `.env.example` to `.env`:
+### Environment Configuration
+Configure your `.env` file based on `.env.example`:
 ```env
+# Gemini API Key (injected by AI Studio or set manually)
 GEMINI_API_KEY="your-gemini-api-key"
-PORT=3000
+
+# App URL (optional for self-referential links)
+APP_URL="http://localhost:3000"
 ```
 
-### 3. Run Test Suite
-```bash
-npm test
-```
-*Output: 6/6 tests passing (320ms duration)*
-
-### 4. Launch Development Server
+### Running the Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+The server will start at `http://localhost:3000` with the Express proxy and Vite development middleware mounted concurrently.
 
-### 5. Production Build
+### Running Unit Tests
+```bash
+npm test
+```
+Executes domain logic tests, RFC 4180 CSV escaping, formula injection protection, date offsets, budget calculations, email dispatch templating, and Dirty Dozen security assertions across 24 test cases.
+
+### Production Build
 ```bash
 npm run build
 npm start
@@ -179,5 +125,35 @@ npm start
 
 ---
 
-## 📄 License
-This project is licensed under the Apache-2.0 License.
+## Security & Access Control (ABAC)
+
+Firestore security rules enforce strict user-ownership validation and server-side list query restrictions:
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /events/{eventId} {
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(eventId) && isValidEvent(request.resource.data) && request.resource.data.id == eventId;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid && isValidEvent(request.resource.data);
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      match /budgetItems/{itemId} { allow read, write: if isEventOwner(eventId); }
+      match /tasks/{taskId} { allow read, write: if isEventOwner(eventId); }
+      match /vendors/{vendorId} { allow read, write: if isEventOwner(eventId); }
+      match /guests/{guestId} { allow read, write: if isEventOwner(eventId); }
+      match /aiPlans/{planId} { allow read, write: if isEventOwner(eventId); }
+    }
+  }
+}
+```
+
+---
+
+## License
+Licensed under the Apache-2.0 License.
